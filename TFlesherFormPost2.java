@@ -41,15 +41,21 @@ public class TFlesherFormPost2 extends HttpServlet{
 	
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 		throws ServletException, IOException {
-			final String name = request.getParameter("studentName");
-			final String grade = request.getParameter("selectGrade");
-			final String pf = request.getParameter("rdoPassFail");
+			String firstname = request.getParameter("firstName");
+			String lastname = request.getParameter("lastName");
+			String english = request.getParameter("rdoEnglish");
+			String math = request.getParameter("rdoMath");
+			String science = request.getParameter("rdoScience");
+			String socstudies = request.getParameter("rdoSocialStudies");
+			//Capitalize first letter of name
+			String cFN = Character.toUpperCase(firstname.charAt(0)) + firstname.substring(1);
+			String cLN = Character.toUpperCase(lastname.charAt(0)) + lastname.substring(1);
 			
 			PrintWriter out = response.getWriter();
 			printHeader(out);
 			printForm(out);
 			out.println("<br/><hr/><h4>doPost: Database Insert events</h4>");		
-			InsertData(out,name,grade,pf);
+			InsertData(out,cFN,cLN,english,math,science,socstudies);
 			out.println("<hr/>");
 			//printForm(out);
 			//out.println("<br/><hr/>");
@@ -85,35 +91,75 @@ public class TFlesherFormPost2 extends HttpServlet{
 		out.println("<table border='0'>" +
 					"<tr>" +
 						"<td>" +
-							"<label>Name of Student:</label> " +
+							"<label>First name:</label> " +
 						"</td>" +
 						"<td>" +
-							"<input type='text' name='studentName' size='35' maxlength='35'/>" +
+							"<input type='text' name='firstName' size='35' maxlength='35' required/>" +
 						"</td>" +
 					"</tr>" +
 					"<tr>" +
 						"<td>" +
-							"<label>Select Grade:</label>" +
+							"<label>Last name:</label> " +
 						"</td>" +
 						"<td>" +
-							"<select name='selectGrade'>" +
-							"<option selected='selected' value='A'>A</option>" +
-							"<option value='B'>B</option>" +
-							"<option value='C'>C</option>" +
-							"<option value='D'>D</option>" +
-							"<option value='F'>F</option>" +
-							"</select>" +
+							"<input type='text' name='lastName' size='35' maxlength='35' required/>" +
+						"</td>" +
+					"</tr>" +
+					"<tr>" +
+					 "<td colspan='2'><label><b>Select Grade:</b></label><br/></td>" +
+					"</tr>"+
+					"<tr>" +
+						"<td>" +
+							"<label>Engish: </label>" +
+						"</td>" +
+						"<td>" +
+							"<input type='radio' name='rdoEnglish' value='A' required/><label>A</label>" +
+							"<input type='radio' name='rdoEnglish' value='B'/><label>B</label>" +
+							"<input type='radio' name='rdoEnglish' value='C'/><label>C</label>" +
+							"<input type='radio' name='rdoEnglish' value='D'/><label>D</label>" +
+							"<input type='radio' name='rdoEnglish' value='F'/><label>F</label>" +
+							"<input type='radio' name='rdoEnglish' value='NA'/><label>N/A</label>" +
 						"</td>" +
 					"</tr>" +
 					"<tr>" +
 						"<td>" +
-							"<label>Did the student Pass?</label>" +
+							"<label>Math: </label>" +
 						"</td>" +
 						"<td>" +
-							"<input type='radio' name='rdoPassFail' value='Pass' checked='checked'/><label>PASSED</label>" +
-							"<input type='radio' name='rdoPassFail' value='Fail' /><label>FAILED</label>" +
+							"<input type='radio' name='rdoMath' value='A' required/><label>A</label>" +
+							"<input type='radio' name='rdoMath' value='B'/><label>B</label>" +
+							"<input type='radio' name='rdoMath' value='C'/><label>C</label>" +
+							"<input type='radio' name='rdoMath' value='D'/><label>D</label>" +
+							"<input type='radio' name='rdoMath' value='F'/><label>F</label>" +
+							"<input type='radio' name='rdoMath' value='NA'/><label>N/A</label>" +
 						"</td>" +
 					"</tr>" +
+					"<tr>" +
+						"<td>" +
+							"<label>Science: </label>" +
+						"</td>" +
+						"<td>" +
+							"<input type='radio' name='rdoScience' value='A' required/><label>A</label>" +
+							"<input type='radio' name='rdoScience' value='B'/><label>B</label>" +
+							"<input type='radio' name='rdoScience' value='C'/><label>C</label>" +
+							"<input type='radio' name='rdoScience' value='D'/><label>D</label>" +
+							"<input type='radio' name='rdoScience' value='F'/><label>F</label>" +
+							"<input type='radio' name='rdoScience' value='NA'/><label>N/A</label>" +
+						"</td>" +
+					"</tr>" +
+					"<tr>" +
+						"<td>" +
+							"<label>SocialStudies: </label>" +
+						"</td>" +
+						"<td>" +
+							"<input type='radio' name='rdoSocialStudies' value='A' required/><label>A</label>" +
+							"<input type='radio' name='rdoSocialStudies' value='B'/><label>B</label>" +
+							"<input type='radio' name='rdoSocialStudies' value='C'/><label>C</label>" +
+							"<input type='radio' name='rdoSocialStudies' value='D'/><label>D</label>" +
+							"<input type='radio' name='rdoSocialStudies' value='F'/><label>F</label>" +
+							"<input type='radio' name='rdoSocialStudies' value='NA'/><label>N/A</label>" +
+						"</td>" +
+					"</tr>" +					
 					"<tr>" +
 						"<td colspan='2' valign='bottom' align='right' style='padding-right:10px;'>" +
 							"<input type='submit' value='Submit' />" +
@@ -145,7 +191,9 @@ public class TFlesherFormPost2 extends HttpServlet{
 		}
 		//create table
 		try{
-			stmt.executeUpdate("CREATE TABLE " + tableName + " (NAME VARCHAR(35) NOT NULL, GRADE CHAR(1) NOT NULL, PASSFAIL CHAR(8) NOT NULL)");
+			stmt.executeUpdate("CREATE TABLE " + tableName + " (FIRSTNAME VARCHAR(35) NOT NULL, "+
+										"LASTNAME VARCHAR(35) NOT NULL, ENGLISH CHAR(2) NOT NULL, MATH CHAR(2) NOT NULL,"+
+										"SCIENCE CHAR(2) NOT NULL, SOCSTUDIES CHAR(2) NOT NULL)");
 			out.println("<i>Table created: " + tableName +"</i><br/>");
 		} catch (SQLException s){
 			out.println("<i>Table: " + tableName + " failed to create!</i><br/>");
@@ -160,7 +208,7 @@ public class TFlesherFormPost2 extends HttpServlet{
 		}
 	}
 	
-	public void InsertData(PrintWriter out, String sName, String sGrade, String pfStatus){
+	public void InsertData(PrintWriter out, String fn, String ln, String eng, String math, String sci, String ss){
 		try{
 			DriverManager.registerDriver(new oracle.jdbc.OracleDriver());
 			//Connect to the URL
@@ -172,7 +220,8 @@ public class TFlesherFormPost2 extends HttpServlet{
 			return;
 		}
 		try {
-			stmt.executeUpdate("INSERT INTO " + tableName + "(NAME,GRADE,PASSFAIL) VALUES('"+sName+"','"+sGrade+"','"+pfStatus+"')");
+			stmt.executeUpdate("INSERT INTO " + tableName + "(FIRSTNAME,LASTNAME,ENGLISH,MATH,SCIENCE,SOCSTUDIES)"+
+								" VALUES('"+fn+"','"+ln+"','"+eng+"','"+math+"','"+sci+"','"+ss+"')");
 			stmt.executeUpdate("COMMIT");	
 			out.println("<i>Insert statement committed.</i><br/>");
 		} catch (SQLException s){
@@ -200,37 +249,28 @@ public class TFlesherFormPost2 extends HttpServlet{
 			return;
 		}
 		try {
-			rs = stmt.executeQuery("SELECT NAME,GRADE,PASSFAIL FROM " + tableName );
+			rs = stmt.executeQuery("SELECT FIRSTNAME, LASTNAME, ENGLISH, MATH, SCIENCE, SOCSTUDIES FROM " + tableName );
 			out.println("<i>SELECT statement executed..</i><br/><br/>");
-		} catch (SQLException s){
-			out.println("<i>Failed to select data<i><br/>");
-		}
-		// try{
-			// stmt.close();
-			// con.close();
-			// out.println("<i>Close database connection</i><br/>");
-		// }catch (SQLException s){
-			// out.println("<i>Failed to close database connection</i><br/>");
-		// }
-		try{
+			//populate result set
 			ResultSetMetaData rsmd = rs.getMetaData();
 			int colNumber = rsmd.getColumnCount();
 			int counter = 1;
+			out.println("<table border='0'>");
 			while(rs.next()){
-				out.println("Record: "+counter+"<br/>");
+				out.println("<tr><td colspan='2' bgcolor='lightgrey'>Record: "+counter+"</td></tr>");
 				for (int i = 1; i <= colNumber; i++){
 					//if(i > 1) out.print(", ");
 					String colValue = rs.getString(i);
-					out.print(rsmd.getColumnName(i)  + ": " + colValue +"<br/>");
+					out.println("<tr><td>"+rsmd.getColumnName(i)  + ": </td><td>" + colValue +"</td></tr>");
 				}
-				out.println("<br/>");
+				//out.println("<br/>");
 				counter++;
 			}
+			out.println("</table>");
 			stmt.close();
 			con.close();
-		}
-		catch (SQLException s){
-			out.println("<i>Failed to close database connection</i><br/>");
+		} catch (SQLException s){
+			out.println("<i>Failed to select data<i><br/>");
 		}
 	}
 }
